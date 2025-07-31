@@ -13,7 +13,8 @@ function Login({ setIsAuth }) {
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
-
+      const idToken = await user.getIdToken();
+      localStorage.setItem("token", idToken);
       console.log("Sending user data to backend:", user); 
       
       await API.post("/users", {
