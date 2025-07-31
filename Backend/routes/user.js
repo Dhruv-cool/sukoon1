@@ -6,7 +6,7 @@ const User = require("../models/User");
 // @route   POST /api/users
 // @desc    Save user from Google login
 // @access  Public
-router.post("/", async (req, res) => {
+router.post("/users", async (req, res) => {
   try {
     const { name, email, photoURL, uid } = req.body;
 
