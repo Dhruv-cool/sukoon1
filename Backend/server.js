@@ -52,6 +52,10 @@ app.get("/", (req, res) => {
 });
 
 // --- Start the Server ---
+app.get("/api/test", (req, res) => {
+  console.log("✅ /api/test endpoint was hit!");
+  res.json({ message: "Success! Your backend is connected." });
+});
 app.listen(PORT, () => {
   console.log(`🚀 Server is running on port ${PORT}`);
 });
