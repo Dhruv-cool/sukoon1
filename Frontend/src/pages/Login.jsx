@@ -10,33 +10,29 @@ function Login({ setIsAuth }) {
   const provider = new GoogleAuthProvider();
 
 const handleGoogleLogin = async () => {
-  try {
-    const result = await signInWithPopup(auth, provider);
-    const user = result.user;
-
-    // Get the secure ID token from Firebase
-    const idToken = await user.getIdToken();
-
-    // Save token for the axios interceptor to use
-    localStorage.setItem("token", idToken);
-
-    // Call the CORRECT backend endpoint
-    await API.post("/users/login");
-
-    // Set UI state and navigate
-    localStorage.setItem("isAuth", "true");
-    localStorage.setItem("userName", user.displayName);
-    localStorage.setItem("userPhoto", user.photoURL);
-    setIsAuth(true);
-    alert("Login successful!");
-    navigate("/");
-
-  } catch (err) {
-    // Any error in the process will now be caught and displayed
-    console.error("❌ Login or backend sync failed:", err);
-    alert("Login failed. Check the developer console for error details.");
-  }
-};
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      console.log("Sending user data to backend:", user); 
+      await API.post("/users", {
+        name: user.displayName,
+        email: user.email,
+        photoURL: user.photoURL,
+        uid: user.uid,
+      });
+      console.log("Data sent successfully");
+      // Set localStorage auth flags
+      localStorage.setItem("isAuth", "true");
+      localStorage.setItem("userName", user.displayName);
+      localStorage.setItem("userPhoto", user.photoURL);
+      setIsAuth(true);
+      alert("Login successful!");
+      navigate("/"); // Redirect to homepage
+    } catch (err) {
+      console.error("Google login failed:", err);
+      alert("Google login failed");
+    }
+  };
   return (
     <div className="loginPage">
       <p>Sign In With Google to Continue</p>
