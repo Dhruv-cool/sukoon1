@@ -13,23 +13,26 @@ function Login({ setIsAuth }) {
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
+
       console.log("Sending user data to backend:", user); 
+      
       await API.post("/users", {
         name: user.displayName,
         email: user.email,
         photoURL: user.photoURL,
         uid: user.uid,
       });
-      console.log("Data sent successfully");
-      // Set localStorage auth flags
+
+      console.log("✅ Data sent successfully");
+
       localStorage.setItem("isAuth", "true");
       localStorage.setItem("userName", user.displayName);
       localStorage.setItem("userPhoto", user.photoURL);
       setIsAuth(true);
       alert("Login successful!");
-      navigate("/"); // Redirect to homepage
+      navigate("/");
     } catch (err) {
-      console.error("Google login failed:", err);
+      console.error("❌ Google login failed:", err);
       alert("Google login failed");
     }
   };
