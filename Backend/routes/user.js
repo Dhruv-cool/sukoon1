@@ -7,33 +7,37 @@ const User = require("../models/User");
 // @desc    Save user from Google login
 // @access  Public
 router.post("/", async (req, res) => {
+  const idToken = req.headers.authorization?.split("Bearer ")[1];
+
+  if (!idToken) {
+    return res.status(401).json({ message: "No token provided. Unauthorized." });
+  }
+
   try {
-    const { name, email, photoURL, uid } = req.body;
+    // 2. Verify the token with the Firebase Admin SDK
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
+    const { uid, email, name, picture } = decodedToken;
 
-    // Basic validation
-    if (!name || !email || !uid) {
-      return res.status(400).json({ error: "Missing required user fields" });
-    }
+    // 3. Find a user by their unique Firebase UID or create them if they don't exist
+    // This is a secure "upsert" operation based on verified data
+    const user = await User.findOneAndUpdate(
+      { uid: uid }, // The field in your schema must be 'uid' to match this
+      {
+        $set: {
+          name: name,
+          email: email,
+          photoURL: picture, // 'picture' is the key in the decoded token
+        },
+      },
+      { upsert: true, new: true, setDefaultsOnInsert: true }
+    );
 
-    console.log("📩 Incoming user data:", req.body);
+    console.log(`✅ User authenticated/updated: ${user.email}`);
+    res.status(200).json({ message: "User authenticated successfully", user });
 
-    // Check if user already exists
-    let existingUser = await User.findOne({ uid });
-
-    if (existingUser) {
-      console.log("✅ User already exists:", existingUser.email);
-      return res.status(200).json({ message: "User already exists", user: existingUser });
-    }
-
-    // Create and save new user
-    const newUser = new User({ name, email, photoURL, uid });
-    await newUser.save();
-
-    console.log("🎉 New user saved:", newUser.email);
-    res.status(201).json({ message: "User saved successfully", user: newUser });
   } catch (error) {
-    console.error("❌ Error saving user:", error.message);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("❌ Error verifying token or saving user:", error);
+    res.status(401).json({ message: "Invalid or expired token.", error: error.message });
   }
 });
 
