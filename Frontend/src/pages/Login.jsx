@@ -16,13 +16,8 @@ function Login({ setIsAuth }) {
       const idToken = await user.getIdToken();
       localStorage.setItem("token", idToken);
       console.log("Sending user data to backend:", user); 
-      
-      await API.post("/users/login", {
-        name: user.displayName,
-        email: user.email,
-        photoURL: user.photoURL,
-        uid: user.uid,
-      });
+  // THE CORRECT CODE
+await API.post("/users/login");
 
       console.log("✅ Data sent successfully");
 
