@@ -13,7 +13,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyAVS3904m_nPD0SYKNiIw7fjV1CcoEBI5o",
   authDomain: "sukoon-app-98987.firebaseapp.com",
   projectId: "sukoon-app-98987",
-  storageBucket: "sukoon-app-98987.firebasestorage.app",
+  storageBucket: "sukoon-app-98987.appshot.com",
   messagingSenderId: "858381221211",
   appId: "1:858381221211:web:bd4bcacfb6682c33d36e7e"
 };
