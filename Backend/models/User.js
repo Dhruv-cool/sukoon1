@@ -8,4 +8,4 @@ const userSchema = new mongoose.Schema({
   uid: { type: String, unique: true },
 }, { timestamps: true });
 
-module.exports = mongoose.model("User", userSchema,"loginusers");
+module.exports = mongoose.model("loginusers", userSchema);
